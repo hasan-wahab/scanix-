@@ -8,7 +8,6 @@ class AppLoading {
   }) {
     showDialog(
       context: context,
-
       barrierDismissible: false,
       builder: (_) => WillPopScope(
         onWillPop: () async => false,

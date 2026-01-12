@@ -1,12 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:scan_app/data/models/history_model.dart';
+import 'package:scan_app/data/storage/histrory.dart';
 import 'package:scan_app/pres/app_color/app_colors.dart';
 import 'package:scan_app/pres/pages/home_page/widgets/quick_action_btn.dart';
 
 import '../../widgets/custom_cord_widget.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  List<HistoryModel?> history = [];
+  @override
+  void initState() {
+    getData();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,19 +65,26 @@ class HomePage extends StatelessWidget {
 
           /// Card List
           /// Recent Scans Preview
-          ...List.generate((5), (index) {
+          ...List.generate((history.length), (index) {
             return Padding(
               padding: EdgeInsets.only(bottom: 15.12.h),
               child: CustomCardWidget(
-                title: 'Product UPC',
-                subTitle: 'Barcode scan',
-                trailingTitle: 'RS: 100.00',
-                trailingSubTitle: 'Dec 15, 2025 at 10:30 AM',
+                title: history[index]!.scanType ?? '',
+                subTitle: history[index]!.scanType ?? "",
+                trailingTitle: history[index]!.data ?? '',
+                trailingSubTitle: history[index]!.date ?? '',
               ),
             );
           }),
         ],
       ),
     );
+  }
+
+  void getData() async {
+    final data = await History.getData(key: 'data');
+    if (data.isNotEmpty) {
+      history = data;
+    }
   }
 }

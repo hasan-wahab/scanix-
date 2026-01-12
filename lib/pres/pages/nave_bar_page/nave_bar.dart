@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:scan_app/pres/app_color/app_colors.dart';
 import 'package:scan_app/pres/bloc/nave_bar_bloc/nav_bar_event.dart';
 import 'package:scan_app/pres/bloc/nave_bar_bloc/nave_bar_bloc.dart';
@@ -24,9 +25,9 @@ class NaveBar extends StatelessWidget {
     return BlocConsumer<NaveBarBloc, NaveBarState>(
       listener: (context, state) {
         if (state is OpenScannerState) {
-          screenList.insert(1, QrCodeScanner());
+          screenList[1] = QrCodeScanner();
         } else {
-          screenList.insert(1, HomePage());
+          screenList[1] = HomePage();
         }
       },
       builder: (context, state) {
@@ -42,8 +43,23 @@ class NaveBar extends StatelessWidget {
               Positioned(
                 bottom: 99.h / 2,
                 child: ScanCircleButton(
-                  onTap: () {
-                    context.read<NaveBarBloc>().add(OpenScannerEvent());
+                  onTap: () async {
+                    bool granted = await checkCameraPermission();
+
+                    if (granted) {
+                      if (!context.mounted) return;
+                      context.read<NaveBarBloc>().add(OpenScannerEvent());
+                    } else {
+                      if (!context.mounted) return;
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            "Camera permission is required to scan.",
+                          ),
+                        ),
+                      );
+                    }
                   },
                 ),
               ),
@@ -52,5 +68,21 @@ class NaveBar extends StatelessWidget {
         );
       },
     );
+  }
+
+  Future<bool> checkCameraPermission() async {
+    var status = await Permission.camera.status;
+
+    if (status.isGranted) {
+      return true;
+    } else if (status.isDenied) {
+      status = await Permission.camera.request();
+      return status.isGranted;
+    } else if (status.isPermanentlyDenied) {
+      openAppSettings();
+      return false;
+    }
+
+    return false;
   }
 }
