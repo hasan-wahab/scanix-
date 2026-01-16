@@ -16,34 +16,41 @@ class ScanCircleButton extends StatefulWidget {
 class _ScanCircleButtonState extends State<ScanCircleButton> {
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: widget.onTap,
-      child: Align(
-        alignment: Alignment.bottomCenter,
-        child: Container(
-          decoration: BoxDecoration(
-            boxShadow: [
-              BoxShadow(
-                spreadRadius: 1,
-                color: Colors.grey,
-                blurRadius: 10,
-                offset: Offset(0, 4),
+    return ClipOval(
+      child: SizedBox(
+        height: 99.h,
+        width: 99.h,
+        child: Material(
+          child: InkWell(
+            onTap: widget.onTap,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      spreadRadius: 1,
+                      color: Colors.grey,
+                      blurRadius: 10,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                  color: AppColors.primary,
+                  border: Border.all(
+                    color: Color.fromRGBO(26, 13, 137, 1),
+                    width: 5.r,
+                  ),
+                  shape: BoxShape.circle,
+                ),
+                height: 99.h,
+                width: 99.h,
+                child: Icon(
+                  Icons.qr_code_scanner,
+                  size: 63.41.r,
+                  color: Colors.white,
+                ),
               ),
-            ],
-            color: AppColors.primary,
-            border: Border.all(
-              color: Color.fromRGBO(26, 13, 137, 1),
-              width: 5.r,
             ),
-            shape: BoxShape.circle,
-          ),
-          height: 99.h,
-          width: 99.h,
-          child: Icon(
-            Icons.qr_code_scanner,
-            size: 63.41.r,
-            color: Colors.white,
           ),
         ),
       ),

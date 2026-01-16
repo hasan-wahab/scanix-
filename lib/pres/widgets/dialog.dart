@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:scan_app/pres/app_color/app_colors.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class InvoiceQrDialog extends StatelessWidget {
   final String headerTitle;
@@ -101,9 +103,34 @@ class InvoiceQrDialog extends StatelessWidget {
                     const SizedBox(height: 12),
 
                     // Content
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 12),
-                      child: Text(data ?? '', style: TextStyle(fontSize: 13)),
+                    InkWell(
+                      onTap: () async {
+                        if (data!.contains('https')) {
+                          final Uri uri = Uri.parse(data!);
+
+                          if (!await launchUrl(
+                            uri,
+                            mode: LaunchMode.externalApplication,
+                          )) {
+                            throw 'Could not launch $data';
+                          }
+                        }
+                      },
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 12),
+                        child: Text(
+                          data ?? '',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: data!.contains('https')
+                                ? AppColors.primary
+                                : null,
+                            fontWeight: data!.contains('https')
+                                ? FontWeight.bold
+                                : null,
+                          ),
+                        ),
+                      ),
                     ),
 
                     const SizedBox(height: 12),

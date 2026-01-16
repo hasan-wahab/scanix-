@@ -8,7 +8,9 @@ class SaveDataEvent extends HistoryEvent {
   SaveDataEvent({required this.isSaveInHistory});
 }
 
-class GetDataEvent extends HistoryEvent{
+class GetDataEvent extends HistoryEvent {
   String key;
   GetDataEvent({required this.key});
 }
+
+

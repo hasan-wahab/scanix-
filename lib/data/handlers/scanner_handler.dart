@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:mobile_scanner/mobile_scanner.dart' hide BarcodeFormat, Barcode;
 import 'package:scan_app/data/models/history_model.dart';
 import 'package:scan_app/data/storage/histrory.dart';
+import 'package:scan_app/data/storage/recent_history.dart';
 import 'package:scan_app/pres/bloc/history_bloc/history_bloc.dart';
 import 'package:scan_app/pres/bloc/history_bloc/history_event.dart';
 
@@ -129,6 +130,8 @@ class ScannerHandler {
                   scanName: state.formate,
                 ),
               );
+
+              print('My data //////////////// ${state.data}');
               liveScannerController.start();
             },
             headerTitle: state.formate.toString(),
@@ -138,6 +141,16 @@ class ScannerHandler {
             date: DateFormat('EEEE, dd MMM yyyy').format(now).toString(),
           ),
         );
+
+        /// Save data for recent prview
+        HistoryModel model = HistoryModel(
+          productName: state.formate,
+          data: state.data,
+          scanType: state.formate,
+          category: '',
+          dateTime: DateFormat('EEEE, dd MMM yyyy').format(now).toString(),
+        );
+        await RecentHistoryStorage.setData(model);
       }
     }
 
@@ -180,6 +193,16 @@ class ScannerHandler {
             date: DateFormat('EEEE, dd MMM yyyy').format(now).toString(),
           ),
         );
+
+        /// Save data for recent prview
+        HistoryModel model = HistoryModel(
+          productName: state.formate,
+          data: state.barcodeList.toString(),
+          scanType: state.formate,
+          category: '',
+          dateTime: DateFormat('EEEE, dd MMM yyyy').format(now).toString(),
+        );
+        await RecentHistoryStorage.setData(model);
         liveScannerController.start();
       }
     }

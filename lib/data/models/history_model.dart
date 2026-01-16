@@ -2,15 +2,15 @@ class HistoryModel {
   final String? productName;
   final String? category;
   final String? scanType;
-  final String? date;
+  final String? dateTime;
   final String? data;
 
   HistoryModel({
     this.productName,
     this.category,
     this.scanType,
+    this.dateTime,
     this.data,
-    this.date,
   });
 
   Map<String, dynamic> toJson() {
@@ -18,8 +18,8 @@ class HistoryModel {
       'productName': productName,
       'category': category,
       'scanType': scanType,
+      'date': dateTime,
       'data': data,
-      'date': date,
     };
   }
 
@@ -27,8 +27,8 @@ class HistoryModel {
     return HistoryModel(
       productName: map['productName'],
       category: map['category'],
+      dateTime: map['date'],
       data: map['data'],
-      date: map['date'],
       scanType: map['scanType'],
     );
   }

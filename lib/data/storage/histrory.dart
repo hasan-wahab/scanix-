@@ -9,8 +9,8 @@ class History {
     List<String> oldList = [];
     HistoryModel _model = HistoryModel(
       scanType: model.scanType,
-      date: model.date,
-      data: model.date,
+      dateTime: model.dateTime,
+      data: model.data,
       category: model.category,
       productName: model.productName,
     );
@@ -36,12 +36,28 @@ class History {
         final data = HistoryModel.fromJson(jsonData);
         historyData.add(data);
       }
-      historyData.sort((a, b) => b.date.toString().compareTo(a.date!.toString()));
+      historyData.sort(
+        (a, b) => b.dateTime.toString().compareTo(a.dateTime!.toString()),
+      );
 
-      print(historyData.first.date);
       return historyData;
     }
     return historyData;
+  }
+
+  static saveCategoryList() async {
+    final SharedPreferences preferences = await SharedPreferences.getInstance();
+
+    List<String> defaultList = ['Personal', 'Work', 'Shopping', 'Documents'];
+
+    await preferences.setStringList('categoryList', defaultList);
+  }
+
+  static getCategoryList() async {
+    final SharedPreferences preferences = await SharedPreferences.getInstance();
+
+    final oldList = preferences.getStringList('categoryList');
+    print(oldList);
   }
 
   static clear() async {

@@ -31,39 +31,38 @@ class NaveBar extends StatelessWidget {
         }
       },
       builder: (context, state) {
-        return Scaffold(
-          body: screenList.elementAt(state.value),
-          backgroundColor: AppColors.white,
+        return WillPopScope(
+          onWillPop: () async {
+            if (state.value == 1) {
+              return true;
+            }
+            context.read<NaveBarBloc>().add(NaveBarIndexEvent(value: 1));
+            return false;
+          },
+          child: Scaffold(
+            body: screenList.elementAt(state.value),
+            backgroundColor: AppColors.white,
 
-          bottomNavigationBar: Stack(
-            clipBehavior: Clip.none,
-            alignment: Alignment.topCenter,
-            children: [
-              BottomNaveBar(),
-              Positioned(
-                bottom: 99.h / 2,
-                child: ScanCircleButton(
-                  onTap: () async {
-                    bool granted = await checkCameraPermission();
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerDocked,
+            floatingActionButton: ScanCircleButton(
+              onTap: () async {
+                bool granted = await checkCameraPermission();
 
-                    if (granted) {
-                      if (!context.mounted) return;
-                      context.read<NaveBarBloc>().add(OpenScannerEvent());
-                    } else {
-                      if (!context.mounted) return;
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            "Camera permission is required to scan.",
-                          ),
-                        ),
-                      );
-                    }
-                  },
-                ),
-              ),
-            ],
+                if (granted) {
+                  if (!context.mounted) return;
+                  context.read<NaveBarBloc>().add(OpenScannerEvent());
+                } else {
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Camera permission is required to scan."),
+                    ),
+                  );
+                }
+              },
+            ),
+            bottomNavigationBar: BottomNaveBar(),
           ),
         );
       },
