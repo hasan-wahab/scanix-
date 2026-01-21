@@ -3,9 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:scan_app/data/models/history_model.dart';
 import 'package:scan_app/data/storage/histrory.dart';
+import 'package:scan_app/data/storage/recent_history.dart';
 import 'package:scan_app/pres/app_color/app_colors.dart';
 import 'package:scan_app/pres/bloc/history_bloc/history_bloc.dart';
 import 'package:scan_app/pres/bloc/history_bloc/history_event.dart';
+import 'package:scan_app/pres/bloc/home_page_bloc/home_page_bloc.dart';
+import 'package:scan_app/pres/bloc/home_page_bloc/home_page_event.dart';
 
 import '../bloc/scan_save_bloc/category_bloc.dart';
 import '../bloc/scan_save_bloc/category_event.dart';
@@ -14,8 +17,9 @@ import '../bloc/scan_save_bloc/category_state.dart';
 class ScanSaveDialog extends StatefulWidget {
   final String? scanName;
   final String? scanedData;
+  final int? index;
 
-  const ScanSaveDialog({super.key, this.scanName, this.scanedData});
+  const ScanSaveDialog({super.key, this.scanName, this.scanedData, this.index});
 
   @override
   State<ScanSaveDialog> createState() => _ScanSaveDialogState();
@@ -207,6 +211,7 @@ class _ScanSaveDialogState extends State<ScanSaveDialog> {
       dateTime: DateTime.now().toString(),
       category: selectedCategory,
       productName: scanName,
+      isSaved: true,
     );
 
     final result = await History.saveData(key: 'data', model: model);
@@ -214,9 +219,38 @@ class _ScanSaveDialogState extends State<ScanSaveDialog> {
     if (!mounted) return;
 
     context.read<HistoryBloc>().add(SaveDataEvent(isSaveInHistory: result));
-
+    if (widget.index != null) {
+      await RecentHistoryStorage.updateRecentHistory(
+        isSaved: true,
+        index: widget.index!,
+      );
+      if (!mounted) return;
+      context.read<HomePageBloc>().add(HomeGetHistoryEvent());
+    }
     Navigator.pop(context);
   }
+
+  // Future<void> _updateScan() async {
+  //   final scanName = nameController.text.isNotEmpty
+  //       ? nameController.text
+  //       : 'No Name';
+  //
+  //   final model = HistoryModel(
+  //     scanType: scanName,
+  //     data: widget.scanedData,
+  //     dateTime: DateTime.now().toString(),
+  //     category: selectedCategory,
+  //     productName: scanName,
+  //     isSaved: true,
+  //   );
+  //
+  //   final result = await History.saveData(key: 'data', model: model);
+  //
+  //   if (!mounted) return;
+  //
+  //   context.read<HistoryBloc>().add(SaveDataEvent(isSaveInHistory: result));
+  //   Navigator.pop(context);
+  // }
 
   void _showAddCategoryDialog(BuildContext context) {
     showDialog(

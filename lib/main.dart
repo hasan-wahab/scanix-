@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:scan_app/paractice/paractice.dart';
 import 'package:scan_app/pres/bloc/export_excel_bloc/excel_bloc.dart';
-import 'package:scan_app/pres/bloc/export_excel_bloc/excel_event.dart';
 import 'package:scan_app/pres/bloc/history_bloc/history_bloc.dart';
+import 'package:scan_app/pres/bloc/home_page_bloc/home_page_bloc.dart';
 import 'package:scan_app/pres/bloc/nave_bar_bloc/nave_bar_bloc.dart';
 import 'package:scan_app/pres/bloc/scan_save_bloc/category_bloc.dart';
 import 'package:scan_app/pres/bloc/scanner_bloc/scanner_bloc.dart';
+import 'package:scan_app/pres/bloc/setting_bloc/settings_bloc.dart';
 import 'package:scan_app/pres/pages/splash_page.dart';
 
 void main() {
@@ -30,7 +30,8 @@ class MyApp extends StatelessWidget {
           BlocProvider(create: (context) => HistoryBloc()),
           BlocProvider(create: (context) => CategoryBloc()),
           BlocProvider(create: (context) => ExportExcelBloc()),
-          //  BlocProvider(create: (context) => PracticeBloc()),
+          BlocProvider(create: (context) => HomePageBloc()),
+          BlocProvider(create: (context) => SettingsBloc()),
         ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,

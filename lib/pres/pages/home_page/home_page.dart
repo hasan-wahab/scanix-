@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:open_file/open_file.dart';
+import 'package:scan_app/data/handlers/vibrate_handler.dart';
 import 'package:scan_app/data/models/history_model.dart';
 import 'package:scan_app/data/storage/histrory.dart';
 import 'package:scan_app/data/storage/recent_history.dart';
@@ -10,9 +11,17 @@ import 'package:scan_app/pres/bloc/export_excel_bloc/excel_bloc.dart';
 import 'package:scan_app/pres/bloc/export_excel_bloc/excel_bloc.dart';
 import 'package:scan_app/pres/bloc/history_bloc/history_bloc.dart';
 import 'package:scan_app/pres/bloc/history_bloc/history_state.dart';
+import 'package:scan_app/pres/bloc/home_page_bloc/home_page_bloc.dart';
+import 'package:scan_app/pres/bloc/home_page_bloc/home_page_event.dart';
+import 'package:scan_app/pres/bloc/home_page_bloc/home_page_state.dart';
 import 'package:scan_app/pres/bloc/nave_bar_bloc/nav_bar_event.dart';
 import 'package:scan_app/pres/bloc/nave_bar_bloc/nave_bar_bloc.dart';
+import 'package:scan_app/pres/pages/detail_page/detail_page.dart';
 import 'package:scan_app/pres/pages/home_page/widgets/quick_action_btn.dart';
+import 'package:scan_app/pres/widgets/dialog.dart';
+import 'package:scan_app/pres/widgets/save_dilog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vibration/vibration.dart';
 
 import '../../bloc/export_excel_bloc/excel_event.dart';
 import '../../bloc/export_excel_bloc/excel_state.dart';
@@ -30,7 +39,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    getData();
+    context.read<HomePageBloc>().add(HomeGetHistoryEvent());
     super.initState();
   }
 
@@ -44,13 +53,10 @@ class _HomePageState extends State<HomePage> {
         children: [
           SizedBox(height: 81.4.h),
 
-          /// Heading
           Text(
-            'Hello, Ahmad!',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22.sp),
+            'Quick Actions',
+            style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: 48.26.h),
-          Text('Quick Actions', style: TextStyle(fontSize: 16.sp)),
           SizedBox(height: 10.42.h),
 
           /// Action Button Row
@@ -89,8 +95,9 @@ class _HomePageState extends State<HomePage> {
 
                   return QuickActionBtn(
                     onTap: () {
-                      context.read<ExportExcelBloc>().add(ExportUsersToExcel());
-                      print('Export to excel');
+                      context.read<ExportExcelBloc>().add(
+                        ExportUsersToExcel(key: 'recentData'),
+                      );
                     },
                     icon: Icons.file_download,
                     text: 'Export',
@@ -107,53 +114,90 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
-          SizedBox(height: 95.4.h),
+          SizedBox(height: 22.4.h),
           InkWell(
             onTap: () {},
-            child: Text(
-              'Recent Scans Preview',
-              style: TextStyle(fontSize: 16.sp),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                InkWell(
+                  onTap: () async {
+                    await ScanFeedback.play();
+                  },
+                  child: Text(
+                    'Recent Scans Preview',
+                    style: TextStyle(fontSize: 16.sp),
+                  ),
+                ),
+                InkWell(
+                  onTap: () async {
+                    context.read<HomePageBloc>().add(
+                      HomeDeleteAllHistoryEvent(),
+                    );
+                  },
+                  child: Text(
+                    'Clear all',
+                    style: TextStyle(fontSize: 12.sp, color: Colors.blue),
+                  ),
+                ),
+              ],
             ),
           ),
           SizedBox(height: 19.4.h),
 
           /// Card List
           /// Recent Scans Preview
-          history.isEmpty
-              ? Center(child: Text('No data'))
-              : Column(
-                  children: List.generate(
-                    (history.length < 5 ? history.length : 5),
-                    (index) {
-                      return Padding(
-                        padding: EdgeInsets.only(bottom: 15.12.h),
-                        child: InkWell(
-                          onTap: () async {
-                            await History.clear();
-                          },
-                          child: CustomCardWidget(
-                            title: history[index]!.scanType.toString(),
-                            subTitle: history[index]!.scanType.toString(),
-                            trailingTitle: history[index]!.data.toString(),
-                            trailingSubTitle: history[index]!.dateTime
-                                .toString(),
+          BlocConsumer<HomePageBloc, HomePageState>(
+            listener: (context, state) async {
+              if (state is HomePageHistoryState) {
+                history = state.historyList ?? [];
+              }
+            },
+            builder: (context, state) {
+              return history.isEmpty
+                  ? Center()
+                  : Column(
+                      children: List.generate((history.length), (index) {
+                        return Padding(
+                          padding: EdgeInsets.only(bottom: 15.12.h),
+                          child: InkWell(
+                            onTap: () async {
+                              if (history[index]!.isSaved == true) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        DetailPage(data: history[index]!),
+                                  ),
+                                );
+                              } else {
+                                await showDialog(
+                                  context: context,
+                                  builder: (context) => ScanSaveDialog(
+                                    scanedData: history[index]!.data.toString(),
+                                    scanName: history[index]!.scanType
+                                        .toString(),
+                                    index: index,
+                                  ),
+                                );
+                              }
+                            },
+                            child: CustomCardWidget(
+                              title: history[index]!.scanType.toString(),
+                              subTitle: history[index]!.dateTime.toString(),
+                              trailingTitle: history[index]!.data.toString(),
+                              trailingSubTitle: history[index]!.category
+                                  .toString(),
+                              isSaved: history[index]!.isSaved,
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
+                        );
+                      }),
+                    );
+            },
+          ),
         ],
       ),
     );
-  }
-
-  void getData() async {
-    final data = await RecentHistoryStorage.getData();
-    print(data.length);
-    if (data.isNotEmpty) {
-      history = data;
-      setState(() {});
-    }
   }
 }

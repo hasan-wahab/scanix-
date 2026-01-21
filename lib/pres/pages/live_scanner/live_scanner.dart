@@ -58,7 +58,7 @@ class _QrCodeScannerState extends State<QrCodeScanner> {
                   controller: liveScannerController,
                   onDetect: (BarcodeCapture barcode) {
                     context.read<ScannerBloc>().add(
-                      ScanQrCodeEvent(barcode: barcode),
+                      ScanQrCodeEvent(barcode: barcode,context: context),
                     );
                   },
                 ),

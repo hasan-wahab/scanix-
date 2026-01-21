@@ -7,6 +7,7 @@ import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_scanner/mobile_scanner.dart' hide BarcodeFormat, Barcode;
+import 'package:scan_app/data/handlers/vibrate_handler.dart';
 import 'package:scan_app/data/models/history_model.dart';
 import 'package:scan_app/data/storage/histrory.dart';
 import 'package:scan_app/data/storage/recent_history.dart';
@@ -16,13 +17,17 @@ import 'package:scan_app/pres/bloc/history_bloc/history_event.dart';
 import 'package:scan_app/pres/bloc/scanner_bloc/scanner_states.dart';
 import 'package:scan_app/pres/widgets/save_dilog.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:vibration/vibration.dart';
 
 import '../../pres/widgets/dialog.dart';
 
 class ScannerHandler {
   ScannerHandler._();
 
-  static pickImage({required Emitter<ScannerStates> emit}) async {
+  static pickImage({
+    required Emitter<ScannerStates> emit,
+    required BuildContext context,
+  }) async {
     final picker = await ImagePicker().pickImage(
       source: ImageSource.gallery,
       imageQuality: 100,
@@ -42,6 +47,9 @@ class ScannerHandler {
       final formate = barcode.first;
       List<String?> barcodes = [];
       if (barcode.isNotEmpty) {
+        if (!context.mounted) return;
+        await ScanFeedback.vibration(context);
+        await ScanFeedback.play();
         for (var b in barcode) {
           barcodes.add(b.rawValue);
         }
@@ -54,6 +62,7 @@ class ScannerHandler {
                 : 'Barcode',
           ),
         );
+
         await barcodeScanner.close();
       } else {
         if (emit.isDone) return;
@@ -67,10 +76,15 @@ class ScannerHandler {
   static liveScan({
     required Emitter<ScannerStates> emit,
     required BarcodeCapture barcode,
-  }) {
+    required BuildContext context,
+  }) async {
     final code = barcode.barcodes.first.rawValue;
     final formate = barcode.barcodes.first;
     if (code != null) {
+      if (!context.mounted) return;
+      await ScanFeedback.vibration(context);
+      await ScanFeedback.play();
+
       if (emit.isDone) return;
       emit(
         ScanQrCodeState(
@@ -102,8 +116,7 @@ class ScannerHandler {
 
     if (state is ScanQrCodeState) {
       if (state.data != null) {
-        liveScannerController.stop();
-
+        await liveScannerController.stop();
         if (!context.mounted) return;
         await showDialog(
           context: context,
@@ -150,7 +163,7 @@ class ScannerHandler {
           category: '',
           dateTime: DateFormat('EEEE, dd MMM yyyy').format(now).toString(),
         );
-        await RecentHistoryStorage.setData(model);
+        await RecentHistoryStorage.setRecentHistory(model);
       }
     }
 
@@ -194,7 +207,7 @@ class ScannerHandler {
           ),
         );
 
-        /// Save data for recent prview
+        /// Save data for recent preview
         HistoryModel model = HistoryModel(
           productName: state.formate,
           data: state.barcodeList.toString(),
@@ -202,7 +215,7 @@ class ScannerHandler {
           category: '',
           dateTime: DateFormat('EEEE, dd MMM yyyy').format(now).toString(),
         );
-        await RecentHistoryStorage.setData(model);
+        await RecentHistoryStorage.setRecentHistory(model);
         liveScannerController.start();
       }
     }

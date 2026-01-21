@@ -11,7 +11,8 @@ class CustomCardWidget extends StatelessWidget {
   final String? trailingTitle;
   final String? trailingSubTitle;
   final VoidCallback? onTap;
-  const CustomCardWidget({
+  bool isSaved;
+  CustomCardWidget({
     super.key,
     this.leadingIcon,
     this.trailingIcon,
@@ -20,6 +21,7 @@ class CustomCardWidget extends StatelessWidget {
     this.trailingTitle,
     this.trailingSubTitle,
     this.onTap,
+    this.isSaved = false,
   });
 
   @override
@@ -54,19 +56,25 @@ class CustomCardWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Text(
-                      maxLines: 1,
-                      overflow: TextOverflow.fade,
-                      title,
-                      style: TextStyle(fontSize: 14.sp),
+                    SizedBox(
+                      width: 122.w,
+                      child: Text(
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        title,
+                        style: TextStyle(fontSize: 14.sp),
+                      ),
                     ),
-                    Text(
-                      maxLines: 1,
-                      overflow: TextOverflow.fade,
-                      subTitle,
-                      style: TextStyle(
-                        fontSize: 10.sp,
-                        color: AppColors.secondText,
+                    SizedBox(
+                      width: 122.w,
+                      child: Text(
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        subTitle,
+                        style: TextStyle(
+                          fontSize: 10.sp,
+                          color: AppColors.secondText,
+                        ),
                       ),
                     ),
                   ],
@@ -74,37 +82,72 @@ class CustomCardWidget extends StatelessWidget {
               ],
             ),
 
-            trailingIcon == null
-                ? Column(
-                    spacing: 4.5.h,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      trailingTitle != null
-                          ? Text(
-                              maxLines: 1,
-                              overflow: TextOverflow.fade,
-                              trailingTitle!,
-                              style: TextStyle(
-                                fontSize: 10.sp,
-                                color: AppColors.secondText,
-                              ),
-                            )
-                          : Container(),
-                      trailingSubTitle != null
-                          ? Text(
-                              maxLines: 1,
-                              overflow: TextOverflow.fade,
-                              trailingSubTitle!,
-                              style: TextStyle(
-                                fontSize: 10.sp,
-                                color: AppColors.secondText,
-                              ),
-                            )
-                          : Container(),
-                    ],
-                  )
-                : Icon(trailingIcon, color: AppColors.secondText),
+            SizedBox(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  trailingIcon == null
+                      ? Column(
+                          spacing: 4.5.h,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            trailingTitle != null
+                                ? SizedBox(
+                                    width: 122.w,
+                                    child: Text(
+                                      textAlign: TextAlign.end,
+
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      isSaved == true ? 'Saved' : 'Unsaved',
+                                      style: TextStyle(
+                                        fontSize: 10.sp,
+                                        color: isSaved == true
+                                            ? Colors.green
+                                            : Colors.red,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  )
+                                : Container(),
+                            trailingTitle != null
+                                ? SizedBox(
+                                    width: 122.w,
+                                    child: Text(
+                                      textAlign: TextAlign.end,
+
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      trailingTitle!,
+                                      style: TextStyle(
+                                        fontSize: 10.sp,
+                                        color: AppColors.secondText,
+                                      ),
+                                    ),
+                                  )
+                                : Container(),
+                            // trailingSubTitle != null
+                            //     ? SizedBox(
+                            //         width: 122.w,
+                            //         child: Text(
+                            //           textAlign: TextAlign.end,
+                            //           maxLines: 1,
+                            //           overflow: TextOverflow.ellipsis,
+                            //           trailingTitle!,
+                            //           style: TextStyle(
+                            //             fontSize: 10.sp,
+                            //             color: AppColors.secondText,
+                            //           ),
+                            //         ),
+                            //       )
+                            //     : Container(),
+                          ],
+                        )
+                      : Icon(trailingIcon, color: AppColors.secondText),
+                ],
+              ),
+            ),
           ],
         ),
       ),

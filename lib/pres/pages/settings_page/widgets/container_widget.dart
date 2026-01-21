@@ -6,10 +6,12 @@ import '../../../app_color/app_colors.dart';
 import '../../../widgets/switch_button.dart';
 
 class ContainerWidget extends StatelessWidget {
-  final VoidCallback onTap;
-  bool switchValue;
+  final VoidCallback? soundOnTap;
+  final VoidCallback? vibrationOnTap;
+  bool soundValue;
+  bool vibrationValue;
 
-  ContainerWidget({super.key, required this.onTap, required this.switchValue});
+  ContainerWidget({super.key, required this.soundValue,required this.vibrationValue,  this.soundOnTap,  this.vibrationOnTap});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +32,7 @@ class ContainerWidget extends StatelessWidget {
                 spacing: 5.w,
                 children: [Icon(CupertinoIcons.speaker_2), Text('Scan Sound')],
               ),
-              SwitchButton(switchValue: switchValue, onTap: onTap),
+              SwitchButton(switchValue: soundValue, onTap: soundOnTap ??(){}),
             ],
           ),
           Divider(color: AppColors.secondText),
@@ -44,7 +46,7 @@ class ContainerWidget extends StatelessWidget {
                   Text('Vibration'),
                 ],
               ),
-              SwitchButton(switchValue: switchValue, onTap: onTap),
+              SwitchButton(switchValue: vibrationValue, onTap: vibrationOnTap??(){}),
             ],
           ),
           Divider(color: AppColors.secondText),

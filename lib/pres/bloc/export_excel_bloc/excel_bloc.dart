@@ -39,7 +39,7 @@ class ExportExcelBloc extends Bloc<ExportExcelEvent, ExportExcelState> {
       sheet.appendRow(headers.map((h) => TextCellValue(h)).toList());
 
       /// Fetch history
-      final List<HistoryModel?> list = await History.getData(key: 'data');
+      final List<HistoryModel?> list = await History.getData(key: event.key);
 
       if (list.isEmpty) {
         throw Exception('No history data to export');

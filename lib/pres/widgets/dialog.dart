@@ -105,7 +105,7 @@ class InvoiceQrDialog extends StatelessWidget {
                     // Content
                     InkWell(
                       onTap: () async {
-                        if (data!.contains('https')) {
+                        if (data!.contains('http')) {
                           final Uri uri = Uri.parse(data!);
 
                           if (!await launchUrl(

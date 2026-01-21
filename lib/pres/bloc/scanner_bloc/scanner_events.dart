@@ -9,9 +9,11 @@ class OpenGalleryEvent extends ScannerEvent {
 }
 
 class ScanQrCodeEvent extends ScannerEvent {
+  BuildContext context;
+
   BarcodeCapture barcode;
 
-  ScanQrCodeEvent({required this.barcode});
+  ScanQrCodeEvent({required this.barcode,required this.context});
 }
 
 class TorchEvent extends ScannerEvent {
