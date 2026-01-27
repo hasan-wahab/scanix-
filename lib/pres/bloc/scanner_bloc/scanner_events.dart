@@ -13,10 +13,17 @@ class ScanQrCodeEvent extends ScannerEvent {
 
   BarcodeCapture barcode;
 
-  ScanQrCodeEvent({required this.barcode,required this.context});
+  ScanQrCodeEvent({required this.barcode, required this.context});
 }
 
 class TorchEvent extends ScannerEvent {
   bool torch;
   TorchEvent({required this.torch});
 }
+
+class ScanVibrationSoundEvent extends ScannerEvent {
+  BuildContext context;
+  ScanVibrationSoundEvent({required this.context});
+}
+
+

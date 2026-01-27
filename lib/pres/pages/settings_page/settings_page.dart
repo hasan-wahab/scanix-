@@ -22,27 +22,12 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  late bool vibration = false;
-  late bool sound = false;
 
-  @override
-  void initState() {
-    super.initState();
-    context.read<SettingsBloc>().add(SoundEvent(isSoundON: sound));
-    context.read<SettingsBloc>().add(VibrationEvent(isVibrate: vibration));
-  }
+
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<SettingsBloc, SettingsStates>(
-      listener: (context, state) {
-        if (state is VibrationState) {
-          vibration = state.isVibrate;
-        }
-        if (state is SoundState) {
-          sound = state.isSoundON;
-        }
-      },
+    return BlocBuilder<SettingsBloc, SettingsStates>(
       builder: (context, state) {
         return Container(
           padding: EdgeInsets.symmetric(horizontal: 22.w),
@@ -73,16 +58,16 @@ class _SettingsPageState extends State<SettingsPage> {
 
               /// Scan Sound | Vibration | Language
               ContainerWidget(
-                soundValue: sound,
+                soundValue: state.sound!,
                 soundOnTap: () async {
                   context.read<SettingsBloc>().add(
-                    SoundEvent(isSoundON: sound),
+                    SoundEvent(isSoundON: state.sound!),
                   );
                 },
-                vibrationValue: vibration,
+                vibrationValue: state.vibration!,
                 vibrationOnTap: () {
                   context.read<SettingsBloc>().add(
-                    VibrationEvent(isVibrate: vibration),
+                    VibrationEvent(isVibrate: state.vibration!),
                   );
                 },
               ),

@@ -1,5 +1,7 @@
 class SettingsEvent {}
 
+class OnLoadEvent extends SettingsEvent {}
+
 class SoundEvent extends SettingsEvent {
   bool isSoundON;
   SoundEvent({required this.isSoundON});

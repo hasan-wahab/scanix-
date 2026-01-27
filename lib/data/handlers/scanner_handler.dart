@@ -7,18 +7,13 @@ import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_scanner/mobile_scanner.dart' hide BarcodeFormat, Barcode;
-import 'package:scan_app/data/handlers/vibrate_handler.dart';
 import 'package:scan_app/data/models/history_model.dart';
-import 'package:scan_app/data/storage/histrory.dart';
 import 'package:scan_app/data/storage/recent_history.dart';
-import 'package:scan_app/pres/bloc/history_bloc/history_bloc.dart';
-import 'package:scan_app/pres/bloc/history_bloc/history_event.dart';
-
+import 'package:scan_app/pres/bloc/scanner_bloc/scanner_bloc.dart';
+import 'package:scan_app/pres/bloc/scanner_bloc/scanner_events.dart';
 import 'package:scan_app/pres/bloc/scanner_bloc/scanner_states.dart';
 import 'package:scan_app/pres/widgets/save_dilog.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:vibration/vibration.dart';
-
 import '../../pres/widgets/dialog.dart';
 
 class ScannerHandler {
@@ -48,8 +43,9 @@ class ScannerHandler {
       List<String?> barcodes = [];
       if (barcode.isNotEmpty) {
         if (!context.mounted) return;
-        await ScanFeedback.vibration(context);
-        await ScanFeedback.play();
+        context.read<ScannerBloc>().add(
+          ScanVibrationSoundEvent(context: context),
+        );
         for (var b in barcode) {
           barcodes.add(b.rawValue);
         }
@@ -82,8 +78,10 @@ class ScannerHandler {
     final formate = barcode.barcodes.first;
     if (code != null) {
       if (!context.mounted) return;
-      await ScanFeedback.vibration(context);
-      await ScanFeedback.play();
+
+      context.read<ScannerBloc>().add(
+        ScanVibrationSoundEvent(context: context),
+      );
 
       if (emit.isDone) return;
       emit(

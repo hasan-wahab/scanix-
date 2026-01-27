@@ -13,6 +13,7 @@ import 'package:scan_app/pres/pages/home_page/widgets/scan_circle_button.dart';
 import 'package:scan_app/pres/pages/nave_bar_page/widgets/bottom_nave_bar.dart';
 import 'package:scan_app/pres/pages/settings_page/settings_page.dart';
 
+import '../../../data/handlers/ads_handler.dart';
 import '../live_scanner/live_scanner.dart';
 
 class NaveBar extends StatelessWidget {

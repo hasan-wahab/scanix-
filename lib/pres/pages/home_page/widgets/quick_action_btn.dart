@@ -41,7 +41,7 @@ class QuickActionBtn extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.qr_code_scanner,
+              icon,
               color: isColor == true ? AppColors.white : AppColors.text,
               size: 18.r,
             ),

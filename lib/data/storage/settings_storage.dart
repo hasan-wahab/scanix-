@@ -3,30 +3,37 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SettingsStorage {
   SettingsStorage._();
 
-  static soundOnOff(bool sound) async {
+  static Future<bool> getSound({bool? isOn}) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool result;
 
-    await prefs.setBool('sound', sound = !sound);
-  }
+    bool? isFirstTime = await prefs.getBool('sound');
 
-  static Future<bool> getSound() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (isFirstTime == null) {
+      await prefs.setBool('sound', true);
+    }
 
-    bool result = prefs.getBool('sound') ?? true;
+    if (isOn != null) {
+      await prefs.setBool('sound', isOn);
+    }
 
+    result = await prefs.getBool('sound')!;
     return result;
   }
 
-  static vibrationOnOff(bool isOn) async {
+  static Future<bool> getVibration({bool? vibration}) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('vibrate', isOn = !isOn);
-  }
+    bool result;
+    bool? isFirstTime = await prefs.getBool('vibration');
+    if (isFirstTime == null) {
+      await prefs.setBool('vibration', true);
+    }
 
-  static Future<bool> getVibration() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (vibration != null) {
+      await prefs.setBool('vibration', vibration);
+    }
 
-    bool result = prefs.getBool('vibrate') ?? true;
-
+    result = await prefs.getBool('vibration')!;
     return result;
   }
 }

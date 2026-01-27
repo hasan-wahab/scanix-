@@ -1,11 +1,8 @@
-class SettingsStates {}
+import 'package:scan_app/data/storage/settings_storage.dart';
 
-class SoundState extends SettingsStates {
-  bool isSoundON;
-  SoundState({required this.isSoundON});
-}
+class SettingsStates {
+  bool sound;
+  bool vibration;
 
-class VibrationState extends SettingsStates {
-  bool isVibrate;
-  VibrationState({required this.isVibrate});
+  SettingsStates({this.sound = true, this.vibration = true});
 }

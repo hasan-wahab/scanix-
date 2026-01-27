@@ -6,15 +6,25 @@ import 'package:scan_app/pres/bloc/setting_bloc/settings_states.dart'
 
 class SettingsBloc extends Bloc<SettingsEvent, SettingsStates> {
   SettingsBloc() : super(SettingsStates()) {
-    on<SoundEvent>((event, emit) async {
-      await SettingsStorage.soundOnOff(event.isSoundON);
-      bool isSound = await SettingsStorage.getSound();
-      emit(SoundState(isSoundON: isSound));
+    on<OnLoadEvent>((event, emit) async {
+      bool vibration = await SettingsStorage.getVibration();
+      bool sound = await SettingsStorage.getSound();
+      emit(SettingsStates(vibration: vibration, sound: sound));
     });
+    on<SoundEvent>((event, emit) async {
+      bool sound = await SettingsStorage.getSound(
+        isOn: state.sound = !state.sound!,
+      );
+      emit(SettingsStates(sound: sound, vibration: state.vibration));
+      print('sound ${state.sound}');
+    });
+
     on<VibrationEvent>((event, emit) async {
-      await SettingsStorage.vibrationOnOff(event.isVibrate);
-      bool isVibrate = await SettingsStorage.getVibration();
-      emit(VibrationState(isVibrate: isVibrate));
+      bool vibration = await SettingsStorage.getVibration(
+        vibration: state.vibration = !state.vibration,
+      );
+      emit(SettingsStates(vibration: vibration, sound: state.sound));
+      print('sound ${state.vibration}');
     });
   }
 }

@@ -1,7 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:scan_app/data/storage/ads_storage.dart';
 import 'package:scan_app/pres/pages/nave_bar_page/nave_bar.dart';
+
+import '../../data/handlers/ads_handler.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -18,12 +22,12 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void delayOnSplashScreen() async {
+    //  await AdsStorage.firstTimeAppOpenAd(isFirstTimeAdsShow: true);
     await Future.delayed(Duration(seconds: 3));
     if (!mounted) return;
-    Navigator.pushReplacement(
+    Navigator.of(
       context,
-      CupertinoPageRoute(builder: (context) => NaveBar()),
-    );
+    ).pushReplacement(CupertinoPageRoute(builder: (context) => NaveBar()));
   }
 
   @override
